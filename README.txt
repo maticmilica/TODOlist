@@ -7,4 +7,4 @@ In that menu you can set task as done, too. When you set task done, checkbox ass
 In any point you can see all tasks, tasks in some category or finished tasks by sliding from left side of screen to middle.
 All tasks are kept in database, so even if you end application, your data stay safe.
 
-Hope you enjoy!
+Hope you enjoy! 
