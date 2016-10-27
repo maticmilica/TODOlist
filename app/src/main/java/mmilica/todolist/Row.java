@@ -8,20 +8,20 @@ public class Row {
     public String taskName;
     public String description;
     public String belong;
-    public boolean isChecked;
+    public String isChecked;
 
-    public Row(String taskName, String description, String belong, boolean isChecked) {
+    public Row(String taskName, String description, String belong, String isChecked) {
         this.taskName = taskName;
         this.belong = belong;
         this.description = description;
         this.isChecked = isChecked;
     }
 
-    public void setChecked(boolean checked) {
+    public void setChecked(String checked) {
         isChecked = checked;
     }
 
-    public boolean isChecked() {
+    public String isChecked() {
         return isChecked;
     }
 

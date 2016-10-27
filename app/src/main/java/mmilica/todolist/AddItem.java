@@ -43,10 +43,7 @@ public class AddItem extends AppCompatActivity implements AdapterView.OnItemSele
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                row = new Row(name.getText().toString(), desc.getText().toString(), whichList, false);
-                //MainActivity.adapter.addTasks(row);
-                //MainActivity.adapter.notifyDataSetChanged();
-                //MainActivity.list.setAdapter(MainActivity.adapter);
+                row = new Row(name.getText().toString(), desc.getText().toString(), whichList, "false");
                 MainActivity.db.insert(row);
                 MainActivity.adapter.setList(MainActivity.db.read());
                 description = desc.getText().toString();

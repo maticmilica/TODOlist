@@ -68,7 +68,7 @@ public class ListAdapter extends BaseAdapter {
         ViewHolder holder = (ViewHolder) view.getTag();
 
         holder.tName.setText(row.getTaskName());
-        if (row.isChecked())
+        if (row.isChecked().equals("true"))
             holder.box.setChecked(true);
         else
             holder.box.setChecked(false);
@@ -88,7 +88,7 @@ public class ListAdapter extends BaseAdapter {
         if (list.equals("done"))
         {
             for (int i = 0; i < tasks.size(); i++) {
-                if (tasks.get(i).isChecked()) {
+                if (tasks.get(i).isChecked().equals("true")) {
                     adapterTmp.addTasks(tasks.get(i));
                 }
             }
@@ -113,7 +113,7 @@ public class ListAdapter extends BaseAdapter {
         tasks.get(position).setDescription(newDesc);
     }
 
-    public void editChecked (int position, boolean checked)
+    public void editChecked (int position, String checked)
     {
         tasks.get(position).setChecked(checked);
     }

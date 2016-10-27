@@ -13,6 +13,7 @@ public class EditItem extends AppCompatActivity {
     public static EditText desc1;
     public static Button cancel;
     public static Button edit;
+    String edited;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,22 +27,20 @@ public class EditItem extends AppCompatActivity {
         edit = (Button) findViewById(R.id.editButton1);
         cancel = (Button) findViewById(R.id.cancelButton1);
 
-        name1.setText(MainActivity.taskName);
-        desc1.setText(MainActivity.taskDesc);
+        edited = getIntent().getExtras().getString("name");
+        final Row row = MainActivity.db.getTask(edited);
+
+        name1.setText(row.getTaskName());
+        desc1.setText(row.getDescription());
 
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!MainActivity.isClicked) {
-                    MainActivity.adapter.editName(name1.getText().toString(), desc1.getText().toString(), MainActivity.position);
-                    MainActivity.adapter.notifyDataSetChanged();
-                } else
-                {
-                    MainActivity.adapter.editName(name1.getText().toString(), desc1.getText().toString(), MainActivity.position);
-                    MainActivity.adapterTmp.editName(name1.getText().toString(), desc1.getText().toString(), MainActivity.position);
-                    MainActivity.adapter.notifyDataSetChanged();
-                    MainActivity.adapterTmp.notifyDataSetChanged();
-                }
+                MainActivity.db.editTask(row, name1.getText().toString().trim(), desc1.getText().toString().trim(), row.isChecked());
+                MainActivity.adapter.setList(MainActivity.db.read());
+                if (MainActivity.isClicked)
+                    MainActivity.adapterTmp.setList(MainActivity.db.read());
+
                 finish();
             }
         });

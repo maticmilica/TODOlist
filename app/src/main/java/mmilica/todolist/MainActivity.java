@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -70,37 +71,28 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case R.id.personal:
                         fab.setVisibility(View.VISIBLE);
-                        adapterTmp = adapter.find("personal");
-                        list.setAdapter(adapterTmp);
-                        adapterTmp.notifyDataSetChanged();
+                        //adapterTmp = adapter.find("personal");
+                        adapter.setList(MainActivity.db.readSomeTask("personal"));
                         isClicked = true;
                         break;
                     case R.id.shopping:
                         fab.setVisibility(View.VISIBLE);
-                        adapterTmp = adapter.find("shopping");
-                        list.setAdapter(adapterTmp);
-                        adapterTmp.notifyDataSetChanged();
+                        adapter.setList(MainActivity.db.readSomeTask("shopping"));
                         isClicked = true;
                         break;
                     case R.id.wishlist:
                         fab.setVisibility(View.VISIBLE);
-                        adapterTmp = adapter.find("wishlist");
-                        list.setAdapter(adapterTmp);
-                        adapterTmp.notifyDataSetChanged();
+                        adapter.setList(MainActivity.db.readSomeTask("wishlist"));
                         isClicked = true;
                         break;
                     case R.id.work:
                         fab.setVisibility(View.VISIBLE);
-                        adapterTmp = adapter.find("work");
-                        list.setAdapter(adapterTmp);
-                        adapterTmp.notifyDataSetChanged();
+                        adapter.setList(MainActivity.db.readSomeTask("work"));
                         isClicked = true;
                         break;
                     case R.id.finished:
                         fab.setVisibility(View.INVISIBLE);
-                        adapterTmp = adapter.find("done");
-                        list.setAdapter(adapterTmp);
-                        adapterTmp.notifyDataSetChanged();
+                        adapter.setList(MainActivity.db.readTasksFinished("true"));
                         isClicked = true;
                         break;
                 }
@@ -124,31 +116,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        Row row = (Row) adapter.getItem(info.position);
         switch(item.getItemId()) {
             case R.id.edit:
-                taskName = adapter.getName(info.position);
-                taskDesc = adapter.getDesc(info.position);
-                position = info.position;
-                startActivity(new Intent(MainActivity.this, EditItem.class));
+                Intent intent = new Intent(MainActivity.this, EditItem.class);
+                intent.putExtra("name", row.getTaskName());
+                startActivity(intent);
                 return true;
             case R.id.delete:
+                MainActivity.db.delete(row.getTaskName());
                 if (!isClicked) {
-                    adapter.deleteItem(info.position);
-                    adapter.notifyDataSetChanged();
+                    MainActivity.adapter.setList(MainActivity.db.read());
                 } else
                 {
-                    adapterTmp.deleteItem(info.position);
-                    adapter.deleteItem(info.position);
-                    adapterTmp.notifyDataSetChanged();
+                    MainActivity.adapter.setList(MainActivity.db.read());
+                    MainActivity.adapterTmp.setList(MainActivity.db.read());
                 }
                 return true;
             case R.id.done:
-                    taskName = adapter.getName(info.position);
-                    taskDesc = adapter.getDesc(info.position);
-                    MainActivity.adapter.editChecked(info.position, true);
-                    MainActivity.adapter.notifyDataSetChanged();
-                if(isClicked)
-                    MainActivity.adapterTmp.notifyDataSetChanged();
+                if (row.isChecked().equals("false"))
+                {
+                    db.editTask(row, row.getTaskName(), row.getDescription(), "true");
+                    row.setChecked("true");
+                    adapter.setList(db.read());
+                    Toast.makeText(this, "Task " + row.getTaskName() + " done", Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(this, "Already done", Toast.LENGTH_SHORT).show();
+
+                if (isClicked)
+                    adapterTmp.setList(db.read());
 
                 return true;
             default:

@@ -66,32 +66,138 @@ public class DataBase extends SQLiteOpenHelper {
 
         return cursor.getCount();
     }
-
+    
     public ArrayList<Row> read()
     {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(TABLE_NAME, null, null, null, null, null, null, null);
 
-        ArrayList<Row> rows = new ArrayList<Row>();
-        int i = 0;
+        ArrayList<Row> tasks = new ArrayList<>();
 
-        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext())
-        {
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
             int index = cursor.getColumnIndex(TASK_NAME);
-            String taskName = cursor.getString(index);
+            String name = cursor.getString(index);
 
             index = cursor.getColumnIndex(TASK_DESC);
-            String taskDesc = cursor.getString(index);
+            String description = cursor.getString(index);
 
             index = cursor.getColumnIndex(TASK_BELONG);
-            String taskBelong = cursor.getString(index);
+            String belong = cursor.getString(index);
 
             index = cursor.getColumnIndex(TASK_CHECKED);
-            String taskChecked = cursor.getString(index);
+            String finished = cursor.getString(index);
 
-            Row row = new Row(taskName, taskDesc, taskBelong, Boolean.valueOf(taskChecked));
-            rows.add(0, row);
+
+            Row row = new Row(name, description, belong, finished);
+
+            tasks.add(0, row);
         }
+
+        return tasks;
+    }
+
+    public Row getTask(String name)
+    {
+        SQLiteDatabase db = getReadableDatabase();
+        String q = "SELECT * FROM " + TABLE_NAME + " WHERE " + TASK_NAME + "='" + name + "'";
+        Cursor cursor = db.rawQuery(q, null);
+
+        cursor.moveToFirst();
+
+        int index = cursor.getColumnIndex(TASK_NAME);
+        String nameGet = cursor.getString(index);
+
+        index = cursor.getColumnIndex(TASK_DESC);
+        String description = cursor.getString(index);
+
+        index = cursor.getColumnIndex(TASK_BELONG);
+        String belong = cursor.getString(index);
+
+        index = cursor.getColumnIndex(TASK_CHECKED);
+        String finished = cursor.getString(index);
+
+
+        Row row = new Row(nameGet, description, belong, finished);
+
+        return row;
+    }
+
+    public ArrayList<Row> readSomeTask(String category)
+    {
+        SQLiteDatabase db = getReadableDatabase();
+        String q = "SELECT * FROM " + TABLE_NAME + " WHERE " + TASK_BELONG + "='" + category + "'";
+
+        Cursor cursor = db.rawQuery(q, null);
+
+        ArrayList<Row> tasks = new ArrayList<>();
+
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            int index = cursor.getColumnIndex(TASK_NAME);
+            String name = cursor.getString(index);
+
+            index = cursor.getColumnIndex(TASK_DESC);
+            String description = cursor.getString(index);
+
+            index = cursor.getColumnIndex(TASK_BELONG);
+            String belong = cursor.getString(index);
+
+            index = cursor.getColumnIndex(TASK_CHECKED);
+            String finished = cursor.getString(index);
+
+
+            Row row = new Row(name, description, belong, finished);
+
+            tasks.add(0, row);
+        }
+
+        return tasks;
+    }
+
+    public ArrayList<Row> readTasksFinished(String finish) {
+        SQLiteDatabase db = getReadableDatabase();
+        String q = "SELECT * FROM " + TABLE_NAME + " WHERE " + TASK_CHECKED + "='" + finish + "'";
+
+        Cursor cursor = db.rawQuery(q, null);
+
+        ArrayList<Row> rows = new ArrayList<>();
+
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            int index = cursor.getColumnIndex(TASK_NAME);
+            String name = cursor.getString(index);
+
+            index = cursor.getColumnIndex(TASK_DESC);
+            String description = cursor.getString(index);
+
+            index = cursor.getColumnIndex(TASK_BELONG);
+            String belong = cursor.getString(index);
+
+            index = cursor.getColumnIndex(TASK_CHECKED);
+            String finished = cursor.getString(index);
+
+
+            Row row = new Row(name, description, belong, finished);
+
+            rows.add(row);
+        }
+
         return rows;
+    }
+
+    public void delete(String name)
+    {
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TABLE_NAME, TASK_NAME + "=?", new String[]{name});
+    }
+
+    public void editTask(Row row, String name, String description, String finished)
+    {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues ct = new ContentValues();
+
+        ct.put(TASK_NAME, name);
+        ct.put(TASK_DESC, description);
+        ct.put(TASK_CHECKED, finished);
+
+        db.update(TABLE_NAME, ct, TASK_NAME+"=?", new String[]{row.getTaskName()});
     }
 }
